@@ -1,7 +1,7 @@
 #
 Pod::Spec.new do |s|
   s.name = 'ZBFancyCollectionView'
-  s.version = '0.3.0'
+  s.version = '0.3.1'
   s.summary = 'A delightful iOS ZBFancyCollectionView framework.'
   s.homepage = 'https://github.com/k373379320/ZBFancyCollectionView'
   s.license = { :type => 'MIT', :file => 'LICENSE' }
@@ -12,4 +12,3 @@ Pod::Spec.new do |s|
   s.prefix_header_contents = '#import "ZBFancyCollectionViewPrefixHeader.h"'
   s.frameworks = 'UIKit','CoreFoundation'
 end
-W
