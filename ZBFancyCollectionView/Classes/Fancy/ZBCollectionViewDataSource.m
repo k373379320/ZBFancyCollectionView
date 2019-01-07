@@ -108,6 +108,29 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     return [self.collectionData sectionAtIdx:section].rows.count;
 }
 
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
+    ZBFancyItem *row = [section rowAtIdx:indexPath.row];
+    if (row) {
+        if (self.willDisplayCellHandler) {
+            self.willDisplayCellHandler(collectionView, indexPath, row.rawModel);
+        }
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
+    ZBFancyItem *row = [section rowAtIdx:indexPath.row];
+    if (row) {
+        if (self.didEndDisplayingCellHandler) {
+            self.didEndDisplayingCellHandler(collectionView, indexPath, row.rawModel);
+        }
+    }
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
@@ -115,7 +138,7 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     
     if (row) {
         if (self.cellForRowHandler) {
-            self.cellForRowHandler(collectionView, indexPath);
+            self.cellForRowHandler(collectionView, indexPath, row.rawModel);
         }
         
         if (row.constructBlock) {
