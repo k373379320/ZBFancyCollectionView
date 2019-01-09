@@ -15,11 +15,11 @@
 
 @property (nonatomic, weak) id<UIScrollViewDelegate> scrollDelegate;
 
-@property (nonatomic, copy) void (^ cellForRowHandler)(UICollectionView *collection, NSIndexPath *indexPath, id rawModel);
+@property (nonatomic, copy) void (^ cellForRowHandler)(UICollectionView *collectionView, NSIndexPath *indexPath, id rawModel);
 
-@property (nonatomic, copy) void (^ willDisplayCellHandler)(UICollectionView *collection, NSIndexPath *indexPath, id rawModel);
+@property (nonatomic, copy) void (^ willDisplayCellHandler)(UICollectionView *collectionView, UICollectionViewCell *cell, NSIndexPath *indexPath, id rawModel);
 
-@property (nonatomic, copy) void (^ didEndDisplayingCellHandler)(UICollectionView *collection, NSIndexPath *indexPath, id rawModel);
+@property (nonatomic, copy) void (^ didEndDisplayingCellHandler)(UICollectionView *collectionView,UICollectionViewCell *cell, NSIndexPath *indexPath, id rawModel);
 
 - (instancetype)initWithCollectionView:(UICollectionView *)tableView;
 

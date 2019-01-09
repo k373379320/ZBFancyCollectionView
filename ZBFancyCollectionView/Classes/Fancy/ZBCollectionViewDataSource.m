@@ -115,7 +115,7 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     ZBFancyItem *row = [section rowAtIdx:indexPath.row];
     if (row) {
         if (self.willDisplayCellHandler) {
-            self.willDisplayCellHandler(collectionView, indexPath, row.rawModel);
+            self.willDisplayCellHandler(collectionView, cell, indexPath, row.rawModel);
         }
     }
 }
@@ -126,7 +126,7 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     ZBFancyItem *row = [section rowAtIdx:indexPath.row];
     if (row) {
         if (self.didEndDisplayingCellHandler) {
-            self.didEndDisplayingCellHandler(collectionView, indexPath, row.rawModel);
+            self.didEndDisplayingCellHandler(collectionView,  cell, indexPath, row.rawModel);
         }
     }
 }
