@@ -1,6 +1,0 @@
-framework module Pods_ZBFancyCollectionView_Example {
-  umbrella header "Pods-ZBFancyCollectionView_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}
