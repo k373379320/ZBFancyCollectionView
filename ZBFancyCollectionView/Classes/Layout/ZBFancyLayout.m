@@ -24,7 +24,7 @@
 - (void)prepareLayout
 {
     [super prepareLayout];
-
+    
     [self.layoutHelper makeLayoutDataWithItems:self.dataArray];
 }
 
@@ -47,7 +47,7 @@
                 if (!selectedHeader) {
                     //第一个y = 0
                     CGRect headerRect = headerAttributes.frame;
-                    headerRect.origin.y = self.collectionView.contentOffset.y;
+                    headerRect.origin.y = self.collectionView.contentOffset.y + self.hoverOffset;
                     headerAttributes.frame = headerRect;
                     selectedHeader = headerAttributes;
                 } else {
@@ -58,9 +58,9 @@
                         selectedHeader.frame = selectedRect;
                     }
                     //小于contentOffsetY 则停止
-                    if (CGRectGetMinY(headerAttributes.frame) <= self.collectionView.contentOffset.y) {
+                    if (CGRectGetMinY(headerAttributes.frame) <= self.collectionView.contentOffset.y + self.hoverOffset) {
                         CGRect headerRect = headerAttributes.frame;
-                        headerRect.origin.y = self.collectionView.contentOffset.y;
+                        headerRect.origin.y = self.collectionView.contentOffset.y + self.hoverOffset;
                         headerAttributes.frame = headerRect;
                         selectedHeader = headerAttributes;
                     }
@@ -122,16 +122,15 @@
     }
     return nil;
 }
-
 #pragma mark - private
 
 #pragma mark - lazy
 
-ZBLazyPropertyWithInit(ZBFancyLayoutHelper, layoutHelper,
-{
+ZBLazyPropertyWithInit(ZBFancyLayoutHelper, layoutHelper, {
     _layoutHelper.layout = self;
 });
 
 ZBLazyProperty(NSMutableArray, dataArray);
 
 @end
+

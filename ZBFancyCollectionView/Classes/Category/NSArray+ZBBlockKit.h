@@ -7,10 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-
 extern CGSize ZBGetSizeSendMsg(id target, SEL selector, id model);
 extern UIEdgeInsets ZBGetEdgeInsetsSendMsg(id target, SEL selector, id model);
-
 
 @interface NSArray (ZBBlockKit)
 

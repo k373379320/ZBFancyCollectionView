@@ -17,7 +17,6 @@
     }
     return self;
 }
-
 @end
 
 @implementation ZBFancyLayoutSection
@@ -48,6 +47,7 @@
 - (void)makeLayoutDataWithItems:(NSArray<ZBFancyLayoutItem *> *)items
 {
     [self.sectionDatas removeAllObjects];
+    
     [self.layoutAttributes removeAllObjects];
     [self.rectArray removeAllObjects];
     [self.rectArray addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), 0)]];
@@ -56,13 +56,19 @@
     __block NSInteger sectionCount = 0;
     __block NSInteger currentIndexPathRow = 0;
     __block NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-    __weak typeof(self)weakSelf = self;
-    
+    __weak typeof(self) weakSelf = self;
     [items enumerateObjectsUsingBlock:^(ZBFancyLayoutItem *_Nonnull item, NSUInteger idx, BOOL *_Nonnull stop) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         UICollectionViewLayoutAttributes *layoutAttributes = nil;
-        
-        if (item.itemType == ZBFancyLayoutItemTypeSectionHeader) {
+        if (item.itemType == ZBFancyLayoutItemTypeCell) {
+            indexPath = [NSIndexPath indexPathForItem:currentIndexPathRow inSection:indexPath.section];
+            layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+            currentIndexPathRow++;
+            
+            ZBFancyLayoutSection *section = strongSelf.sectionDatas[indexPath.section];
+            [section.items addObject:item];
+            
+        } else if (item.itemType == ZBFancyLayoutItemTypeSectionHeader) {
             indexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:sectionCount];
             layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader withIndexPath:indexPath];
             layoutAttributes.zIndex = 20 + sectionCount;
@@ -73,24 +79,10 @@
             section.headerView = item;
             section.items = [[NSMutableArray alloc] init];
             [self.sectionDatas addObject:section];
-        }
-        
-        if (item.itemType == ZBFancyLayoutItemTypeCell) {
-            if (sectionCount == 0) {
-                //没有headView
-                ZBFancyLayoutSection *section = [[ZBFancyLayoutSection alloc] init];
-                section.items = [[NSMutableArray alloc] init];
-                [self.sectionDatas addObject:section];
-            }
-            indexPath = [NSIndexPath indexPathForItem:currentIndexPathRow inSection:indexPath.section];
-            layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            currentIndexPathRow++;
-            ZBFancyLayoutSection *section = strongSelf.sectionDatas[indexPath.section];
-            [section.items addObject:item];
-        }
-        
-        if (item.itemType == ZBFancyLayoutItemTypeSectionFooter) {
+            
+        } else if (item.itemType == ZBFancyLayoutItemTypeSectionFooter) {
             layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter withIndexPath:[NSIndexPath indexPathForItem:0 inSection:sectionCount - 1]];
+            
             ZBFancyLayoutSection *section = strongSelf.sectionDatas[indexPath.section];
             section.footerView = item;
         }
@@ -104,18 +96,16 @@
             x = 0;
             w = CGRectGetWidth([UIScreen mainScreen].bounds);
         }
-        if (layoutAttributes) {
-            layoutAttributes.frame = CGRectMake(x, y, w, h);
-            [self.layoutAttributes addObject:layoutAttributes];
-            item.layoutAttributes = layoutAttributes;
-        }
+        layoutAttributes.frame = CGRectMake(x, y, w, h);
+        [self.layoutAttributes addObject:layoutAttributes];
+        item.layoutAttributes = layoutAttributes;
         lastItem = item;
         self.contentSizeHeight = y + h;
+        
     }];
     
     self.sectionCount = sectionCount + 1;
 }
-
 /**
  * 查找符合条件Rect
  *
@@ -196,7 +186,6 @@
     [self.rectArray addObject:[NSValue valueWithCGRect:rect1]];
     [self.rectArray addObject:[NSValue valueWithCGRect:rect2]];
 }
-
 /**
  *  如果相邻的rect,高度一样,则合并成一个
  */
@@ -221,13 +210,12 @@
         }
     }
 }
-
 /**
  * 排序一下,下次添加按照左边加;想右边开始排,翻一下
  */
 - (void)handleSortedArray
 {
-    self.rectArray = [self.rectArray sortedArrayUsingComparator:^NSComparisonResult (NSValue *obj1, NSValue *obj2) {
+    self.rectArray = [self.rectArray sortedArrayUsingComparator:^NSComparisonResult(NSValue *obj1, NSValue *obj2) {
         return obj1.CGRectValue.origin.x > obj2.CGRectValue.origin.x;
     }].mutableCopy;
 }
@@ -238,9 +226,10 @@
 ZBLazyProperty(NSMutableArray, sectionDatas);
 
 ZBLazyProperty(NSMutableArray, layoutAttributes);
-ZBLazyPropertyWithInit(NSMutableArray, rectArray,
-{
+ZBLazyPropertyWithInit(NSMutableArray, rectArray, {
     [_rectArray addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), 0)]];
 });
 
+
 @end
+

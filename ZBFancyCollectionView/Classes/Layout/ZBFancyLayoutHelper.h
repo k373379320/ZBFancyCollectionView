@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM (NSUInteger, ZBFancyLayoutItemType) {
+typedef NS_ENUM(NSUInteger, ZBFancyLayoutItemType) {
     ZBFancyLayoutItemTypeCell,
     ZBFancyLayoutItemTypeSectionHeader,
     ZBFancyLayoutItemTypeSectionFooter,

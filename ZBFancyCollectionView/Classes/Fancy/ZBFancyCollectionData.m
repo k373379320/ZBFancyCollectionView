@@ -29,7 +29,7 @@
 
 - (NSArray<NSString *> *)allSectionsKeys
 {
-    return [self.innerSections zbbk_map:^id (ZBSection *section) {
+    return [self.innerSections zbbk_map:^id(ZBSection *section) {
         return section.key;
     }];
 }

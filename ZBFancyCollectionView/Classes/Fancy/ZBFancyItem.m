@@ -18,7 +18,7 @@
         _itemSizeSel = NSSelectorFromString(@"itemSize:");
         _configSel = NSSelectorFromString(@"loadData:");
     }
-
+    
     return self;
 }
 

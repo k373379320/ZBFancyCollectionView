@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZBFancyCollectionViewCell.h"
 
 @interface ZBFancyItem : NSObject
 
@@ -24,12 +25,14 @@
 
 @property (nonatomic, assign) SEL itemSizeSel;
 
-@property (nonatomic, copy) void (^ selectHandler)(id);
+@property (nonatomic, copy) void (^selectHandler)(id);
 
-@property (nonatomic, copy) UICollectionViewCell * (^ constructBlock)(id);
+@property (nonatomic, copy) UICollectionViewCell * (^constructBlock)(id);
 
-@property (nonatomic, copy) void (^ configureBlock)(id);
+@property (nonatomic, copy) void (^configureBlock)(id);
 
 @property (nonatomic, strong) NSBundle *bundle;
+
+@property (nonatomic, copy) void(^initializeViewBlock)(ZBFancyCollectionViewCell *cell);
 
 @end

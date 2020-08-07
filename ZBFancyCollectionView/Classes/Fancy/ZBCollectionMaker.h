@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ZBSection.h"
 #import "ZBFancyItem.h"
+#import "ZBFancyCollectionViewCell.h"
 
 @interface ZBCollectionViewSectionMaker : NSObject
 
@@ -39,6 +40,8 @@
 @property (nonatomic, copy, readonly) ZBCollectionRowMaker * (^extraDictBlock)(NSDictionary *extraDict);
 
 @property (nonatomic, copy, readonly) ZBCollectionRowMaker * (^bundle)(NSBundle *bundle);
+
+@property (nonatomic, copy, readonly) ZBCollectionRowMaker * (^ initializeViewBlock)(void (^)(ZBFancyCollectionViewCell *cell));
 
 @end
 

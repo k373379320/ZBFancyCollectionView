@@ -7,6 +7,7 @@
 //
 
 #import "UICollectionView+ZBFancy.h"
+#import "NSArray+ZBBlockKit.h"
 #import <objc/runtime.h>
 #import <objc/message.h>
 
@@ -42,7 +43,6 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
 {
     objc_setAssociatedObject(self, kProperty_fancyLayout, fancyLayout, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
 - (ZBFancyLayout *)fancyLayout
 {
     return objc_getAssociatedObject(self, kProperty_fancyLayout);
@@ -60,13 +60,6 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
 + (instancetype)flowLayout
 {
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    /* 9.0之后实现头部悬停
-     if (@available(iOS 9.0, *)) {
-     layout.sectionHeadersPinToVisibleBounds = YES;
-     } else {
-     
-     }
-     */
     return [self collectionViewWithLayout:layout];
 }
 
@@ -78,6 +71,7 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
 
 - (void)zb_configTableView:(void (^)(ZBCollectionProtoFactory *config))block
 {
+    
     ZBCollectionProtoFactory *config = [[ZBCollectionProtoFactory alloc] init];
     if (block) block(config);
     NSArray *configs = [config install];
@@ -94,13 +88,16 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
                 [self.zb_dataSource registerCell:NSClassFromString(config[@"class"]) identifier:config[@"proto"]];
             }
         } else if (type == ZBCollectionViewConfigTypeHeaderView) {
+            
             if (config[@"nibName"]) {
                 UINib *nib = [UINib nibWithNibName:config[@"nibName"] bundle:nil];
                 [self.zb_dataSource registerHeaderNib:nib viewClass:NSClassFromString(config[@"class"]) identifier:config[@"proto"]];
             } else {
                 [self.zb_dataSource registerHeaderView:NSClassFromString(config[@"class"]) identifier:config[@"proto"]];
             }
+            
         } else if (type == ZBCollectionViewConfigTypeFooterView) {
+            
             if (config[@"nibName"]) {
                 UINib *nib = [UINib nibWithNibName:config[@"nibName"] bundle:nil];
                 [self.zb_dataSource registerFooterNib:nib viewClass:NSClassFromString(config[@"class"]) identifier:config[@"proto"]];
@@ -110,9 +107,9 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         }
     }];
 }
-
 - (void)zb_setup:(void (^)(ZBCollectionMaker *maker))block
 {
+    
     ZBCollectionMaker *maker = [[ZBCollectionMaker alloc] init];
     block(maker);
     
@@ -173,7 +170,7 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         if ([sections count] > 0) {
             ZBSection *sectionDataToAppend = sections[0];
             [section appendRows:sectionDataToAppend.rows];
-            __weak typeof(self)weakSelf = self;
+            __weak typeof(self) weakSelf = self;
             [sectionDataToAppend.rows zbbk_each:^(ZBFancyItem *row) {
                 ZBFancyLayoutItem *item = [weakSelf fancyLayoutItemWithFancyItem:row];
                 if (item.size.width > 0) {
@@ -197,22 +194,32 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         return;
     }
     [self.fancyLayout.dataArray removeAllObjects];
-    __weak typeof(self)weakSelf = self;
+    __weak typeof(self) weakSelf = self;
     [sections zbbk_each:^(ZBSection *section) {
         if (section.headerView) {
             ZBFancyLayoutItem *item = [weakSelf fancyLayoutItemWithFancyItem:section.headerView];
             item.itemType = ZBFancyLayoutItemTypeSectionHeader;
-            if (item.size.height <= 0) {
+            if (item.size.height > 0) {
+                [weakSelf.fancyLayout.dataArray addObject:item];
+            } else {
+                ZBFancyLayoutItem *item = [[ZBFancyLayoutItem alloc] init];
                 item.size = CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds), CGFLOAT_MIN);
+                [weakSelf.fancyLayout.dataArray addObject:item];
             }
+        } else {
+            //必须有,不然区别不了section
+            ZBFancyLayoutItem *item = [[ZBFancyLayoutItem alloc] init];
+            item.size = CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds), CGFLOAT_MIN);
             [weakSelf.fancyLayout.dataArray addObject:item];
         }
+        
         [section.rows zbbk_each:^(ZBFancyItem *row) {
             ZBFancyLayoutItem *item = [weakSelf fancyLayoutItemWithFancyItem:row];
             if (item.size.width > 0) {
                 [weakSelf.fancyLayout.dataArray addObject:item];
             }
         }];
+        
         if (section.footerView) {
             ZBFancyLayoutItem *item = [weakSelf fancyLayoutItemWithFancyItem:section.footerView];
             item.itemType = ZBFancyLayoutItemTypeSectionFooter;
@@ -222,7 +229,6 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         }
     }];
 }
-
 - (ZBFancyLayoutItem *)fancyLayoutItemWithFancyItem:(ZBFancyItem *)item
 {
     ZBFancyLayoutItem *layoutItem = [[ZBFancyLayoutItem alloc] init];
@@ -237,10 +243,12 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         if ([cls respondsToSelector:sel]) {
             layoutItem.margin = ZBGetEdgeInsetsSendMsg(cls, sel, model);
         }
-    } else {
-        NSAssert(cls != nil, @"❌ %@  is error", item.protoType);
     }
     return layoutItem;
 }
 
+
+
+
 @end
+

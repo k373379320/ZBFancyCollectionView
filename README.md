@@ -7,12 +7,18 @@
 
 ## Example
 
+#### 一丶基础用法
+
 ```oc
-    self.collectionView = [UICollectionView fancyLayoutWithStyle:self.style];
-    if (self.style == ZBFancyCollectionViewStyleCustom) {
-        self.collectionView.fancyLayout.hoverIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+
+- (UICollectionView *)collectionView
+{
+    if (!_collectionView) {
+        _collectionView = [UICollectionView flowLayout];
     }
-    self.view.backgroundColor = self.collectionView.backgroundColor = [UIColor blackColor];
+    return _collectionView;
+}
+{
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         if (@available(iOS 11.0, *)) {
@@ -35,6 +41,87 @@
         __strong typeof(weakSelf) strongSelf = weakSelf;
         [strongSelf makerExample:maker];
     }];
+}
+```
+#### 二丶不需要创建cell.h cell.m 写法
+
+自带FancyCell模板
+
+```oc
+@interface ZBFancyTableViewCell : UITableViewCell
+
+@property (nonatomic, strong) id cellRawData;
+@property (nonatomic, strong) NSIndexPath *indexPath;
+
+//初始化
+@property (nonatomic, copy) void (^ initializeViewBlock)(ZBFancyTableViewCell *cell);
+//重置view
+@property (nonatomic, copy) void (^ resetViewBlock)(ZBFancyTableViewCell *cell);
+//更新view
+@property (nonatomic, copy) void (^ updateViewBlock)(ZBFancyTableViewCell *cell, id data);
+//自定义布局
+@property (nonatomic, copy) void (^ layoutSubviewsBlock)(ZBFancyTableViewCell *cell);
+
+@end
+```
+
+> 使用
+
+```oc
+
+// 1. register
+[self zb_configTableView:^(ZBCollectionProtoFactory *config) {
+	 config.cell(@"<empty>").cls(@"ZBFancyCollectionViewCell");
+}];
+        
+// 2. config        
+maker.row(@"<empty>").itemSize(CGSizeMake(kScreenWidth, 98)).initializeViewBlock(^(ZBFancyCollectionViewCell *cell) {
+    cell.contentView.backgroundColor = [UIColor colorWithHexString:@"F5F5F5"];
+    UILabel *label = [[UILabel alloc]init];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.layer.cornerRadius = 4;
+    label.layer.masksToBounds = YES;
+    label.backgroundColor = [UIColor whiteColor];
+    label.textColor = [UIColor colorWithHexString:@"#B3B3B3"];
+    label.font = [UIFont systemFontOfSize:13];
+    [cell.contentView addSubview:label];
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.offset(10);
+        make.right.offset(-10);
+        make.top.bottom.offset(0);
+    }];
+    cell.updateViewBlock = ^(ZBFancyCollectionViewCell *cell, id data) {
+        label.text = data;
+    };
+}).model(text);
+```
+
+
+#### 三丶悬停用法
+
+使用ZBFancyLayout
+
+
+```
+@interface ZBFancyLayout : UICollectionViewLayout
+
+@property (nonatomic, strong) ZBFancyLayoutHelper *layoutHelper;
+
+@property (nonatomic, strong) NSMutableArray<ZBFancyLayoutItem *> *dataArray;
+
+@property (nonatomic, assign) ZBFancyCollectionViewStyle style;
+/**
+ 如果type = ZBFancyCollectionViewStyleCustom,需要指定hoverIndexPath,默认第一个
+ */
+@property (nonatomic, strong) NSIndexPath *hoverIndexPath;
+/*
+ 悬浮偏移量
+ */
+@property (nonatomic, assign) CGFloat hoverOffset;
+
+- (NSInteger)sectionCount;
+
+@end
 ```
 
 ## Requirements

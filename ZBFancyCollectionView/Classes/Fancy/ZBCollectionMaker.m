@@ -107,6 +107,14 @@
     };
 }
 
+- (ZBCollectionRowMaker * (^)(void (^)(ZBFancyCollectionViewCell *cell)))initializeViewBlock
+{
+    return ^ZBCollectionRowMaker *(void (^initializeViewBlock)(ZBFancyCollectionViewCell *cell)) {
+        self.row.initializeViewBlock = initializeViewBlock;
+        return self;
+    };
+}
+
 @end
 
 @interface ZBCollectionMaker ()

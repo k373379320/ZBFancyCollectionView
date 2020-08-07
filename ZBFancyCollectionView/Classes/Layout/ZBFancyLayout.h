@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ZBFancyLayoutHelper.h"
 
-typedef NS_ENUM (NSUInteger, ZBFancyCollectionViewStyle) {
+typedef NS_ENUM(NSUInteger, ZBFancyCollectionViewStyle) {
     ZBFancyCollectionViewStylePlain,   //头部会悬停
     ZBFancyCollectionViewStyleGrouped, //头部不会悬停
     ZBFancyCollectionViewStyleCustom   //自定义,可支持指定sectionHeader悬停
@@ -26,6 +26,10 @@ typedef NS_ENUM (NSUInteger, ZBFancyCollectionViewStyle) {
  如果type = ZBFancyCollectionViewStyleCustom,需要指定hoverIndexPath,默认第一个
  */
 @property (nonatomic, strong) NSIndexPath *hoverIndexPath;
+/*
+ 悬浮偏移量
+ */
+@property (nonatomic, assign) CGFloat hoverOffset;
 
 - (NSInteger)sectionCount;
 

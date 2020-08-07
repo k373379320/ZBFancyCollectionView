@@ -7,7 +7,6 @@
 
 #import "NSArray+ZBBlockKit.h"
 
-
 extern CGSize ZBGetSizeSendMsg(id target, SEL selector, id model)
 {
     CGSize size;
@@ -34,7 +33,6 @@ extern UIEdgeInsets ZBGetEdgeInsetsSendMsg(id target, SEL selector, id model)
     return insets;
 }
 
-
 @implementation NSArray (ZBBlockKit)
 
 - (void)zbbk_each:(void (^)(id obj))block
@@ -48,14 +46,14 @@ extern UIEdgeInsets ZBGetEdgeInsetsSendMsg(id target, SEL selector, id model)
 - (NSArray *)zbbk_map:(id (^)(id obj))block
 {
     NSParameterAssert(block != nil);
-    
+
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:self.count];
-    
+
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        id value = block(obj) ?: [NSNull null];
+        id value = block(obj) ? : [NSNull null];
         [result addObject:value];
     }];
-    
+
     return result;
 }
 

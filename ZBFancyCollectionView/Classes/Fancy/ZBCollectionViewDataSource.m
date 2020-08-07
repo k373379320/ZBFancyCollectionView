@@ -10,6 +10,7 @@
 #import "ZBFancyItem.h"
 #import "ZBSection.h"
 #import <objc/message.h>
+#import "ZBFancyCollectionViewCell.h"
 
 static NSString *const ZBCollectionViewFancyProtoTypeIdentifierKey = @"identifier";
 static NSString *const ZBCollectionViewFancyProtoTypeClassKey = @"class";
@@ -38,27 +39,27 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
 
 - (void)registerHeaderView:(Class)viewClass identifier:(NSString *)identifier
 {
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: viewClass };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : viewClass};
     
     [self.collectionView registerClass:viewClass forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:identifier];
 }
 
 - (void)registerFooterView:(Class)viewClass identifier:(NSString *)identifier
 {
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: viewClass };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : viewClass};
     
     [self.collectionView registerClass:viewClass forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:identifier];
 }
 
 - (void)registerHeaderNib:(UINib *)nib viewClass:(Class)viewClass identifier:(NSString *)identifier
 {
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: viewClass };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : viewClass};
     [self.collectionView registerNib:nib forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:identifier];
 }
 
 - (void)registerFooterNib:(UINib *)nib viewClass:(Class)viewClass identifier:(NSString *)identifier
 {
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: viewClass };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : viewClass};
     [self.collectionView registerNib:nib forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:identifier];
 }
 
@@ -68,7 +69,7 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     NSAssert(!(self.protoTypes[identifier]), @"%@ was already registerred", identifier);
     NSAssert(cellClass != nil, @"cellClass must not be nil");
     
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: cellClass };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : cellClass};
     [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
 }
 
@@ -79,15 +80,15 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     NSAssert(cellClass != nil, @"cellClass must not be nil");
     NSAssert(nib, @"nib must not be nill");
     
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: cellClass,
-                                 ZBCollectionViewFancyProtoTypeNibKey: nib };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : cellClass,
+                                ZBCollectionViewFancyProtoTypeNibKey : nib};
     [self.collectionView registerNib:nib forCellWithReuseIdentifier:identifier];
 }
 
 - (void)registerNib:(UINib *)nib headerFooterViewClass:(Class)viewClass identifier:(NSString *)identifier
 {
-    _protoTypes[identifier] = @{ ZBCollectionViewFancyProtoTypeClassKey: viewClass,
-                                 ZBCollectionViewFancyProtoTypeNibKey: nib };
+    _protoTypes[identifier] = @{ZBCollectionViewFancyProtoTypeClassKey : viewClass,
+                                ZBCollectionViewFancyProtoTypeNibKey : nib};
     [self.collectionView registerNib:nib forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:identifier];
 }
 
@@ -108,26 +109,10 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     return [self.collectionData sectionAtIdx:section].rows.count;
 }
 
-
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
-    ZBFancyItem *row = [section rowAtIdx:indexPath.row];
-    if (row) {
-        if (self.willDisplayCellHandler) {
-            self.willDisplayCellHandler(collectionView, cell, indexPath, row.rawModel);
-        }
-    }
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
-    ZBFancyItem *row = [section rowAtIdx:indexPath.row];
-    if (row) {
-        if (self.didEndDisplayingCellHandler) {
-            self.didEndDisplayingCellHandler(collectionView,  cell, indexPath, row.rawModel);
-        }
+    if (self.willDisplayCellHander) {
+        self.willDisplayCellHander(cell,indexPath);
     }
 }
 
@@ -138,7 +123,7 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     
     if (row) {
         if (self.cellForRowHandler) {
-            self.cellForRowHandler(collectionView, indexPath, row.rawModel);
+            self.cellForRowHandler(collectionView, indexPath);
         }
         
         if (row.constructBlock) {
@@ -146,9 +131,17 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
         }
         
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:row.protoType forIndexPath:indexPath];
+        
+        if ([cell isKindOfClass:[ZBFancyCollectionViewCell class]]) {
+            ZBFancyCollectionViewCell *fancyCell = (ZBFancyCollectionViewCell *)cell;
+            fancyCell.initializeViewBlock = row.initializeViewBlock;
+            fancyCell.indexPath = indexPath;
+            fancyCell.cellRawData = row.rawModel;
+        }
+        
         if (row.configSel) {
             if ([cell respondsToSelector:row.configSel]) {
-                ((void (*)(id, SEL, id))objc_msgSend)(cell, row.configSel, row.rawModel);
+                ((void (*)(id, SEL, id)) objc_msgSend)(cell, row.configSel, row.rawModel);
             }
         }
         
@@ -175,13 +168,11 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
                 return row.constructBlock(row.rawModel);
             }
         }
-        if (row.protoType.length > 0) {
-            UICollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:row.protoType forIndexPath:indexPath];
-            if ([reusableView respondsToSelector:row.configSel]) {
-                ((void (*)(id, SEL, id))objc_msgSend)(reusableView, row.configSel, row.rawModel);
-            }
-            return reusableView;
+        UICollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:row.protoType forIndexPath:indexPath];
+        if ([reusableView respondsToSelector:row.configSel]) {
+            ((void (*)(id, SEL, id)) objc_msgSend)(reusableView, row.configSel, row.rawModel);
         }
+        return reusableView;
     }
     if (sec && [kind isEqualToString:UICollectionElementKindSectionFooter]) {
         ZBFancyItem *row = sec.footerView;
@@ -190,16 +181,13 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
                 return row.constructBlock(row.rawModel);
             }
         }
-        if (row.protoType.length > 0) {
-            UICollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:row.protoType forIndexPath:indexPath];
-            if ([reusableView respondsToSelector:row.configSel]) {
-                ((void (*)(id, SEL, id))objc_msgSend)(reusableView, row.configSel, row.rawModel);
-            }            
-            return reusableView;
+        UICollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:row.protoType forIndexPath:indexPath];
+        if ([reusableView respondsToSelector:row.configSel]) {
+            ((void (*)(id, SEL, id)) objc_msgSend)(reusableView, row.configSel, row.rawModel);
         }
+        return reusableView;
     }
-    UICollectionReusableView *reusableView = [[UICollectionReusableView alloc] init];
-    return reusableView;
+    return nil;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -211,7 +199,6 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
         row.selectHandler(row.rawModel);
     }
 }
-
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -254,7 +241,6 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     }
     return CGSizeZero;
 }
-
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     ZBSection *sec = [self.collectionData sectionAtIdx:section];
@@ -275,17 +261,16 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     }
     return CGSizeZero;
 }
-
 //item间距
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
 {
     return 0;
 }
-
 //行间距
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
     return 0;
 }
+
 
 @end
