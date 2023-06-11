@@ -145,6 +145,13 @@
         [strongSelf.sections addObject:sectionMaker];
         strongSelf.currentSectionMaker = sectionMaker;
         sectionMaker.section.key = key;
+        
+        //先前置一个header
+        ZBCollectionRowMaker *rowMaker = [[ZBCollectionRowMaker alloc] init];
+        rowMaker.row.protoType = @"<__empty_header__>";
+        rowMaker.row.itemSize = CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds), CGFLOAT_MIN);
+        sectionMaker.section.headerView = rowMaker.row;
+        
         return sectionMaker;
     };
 }

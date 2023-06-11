@@ -1,6 +1,6 @@
 {
   "name": "ZBFancyCollectionView",
-  "version": "0.0.4",
+  "version": "1.2.0",
   "summary": "A delightful iOS ZBFancyCollectionView framework.",
   "homepage": "https://github.com/k373379320/ZBFancyCollectionView",
   "license": {
@@ -12,15 +12,15 @@
   },
   "source": {
     "git": "https://github.com/k373379320/ZBFancyCollectionView.git",
-    "tag": "0.0.4"
+    "tag": "1.2.0"
   },
   "platforms": {
     "ios": "8.0"
   },
   "source_files": "ZBFancyCollectionView/Classes/**/*",
+  "prefix_header_contents": "#import \"ZBFancyCollectionViewPrefixHeader.h\"",
   "frameworks": [
     "UIKit",
     "CoreFoundation"
-  ],
-  "prefix_header_contents": "#import \"ZBFancyCollectionViewPrefixHeader.h\""
+  ]
 }

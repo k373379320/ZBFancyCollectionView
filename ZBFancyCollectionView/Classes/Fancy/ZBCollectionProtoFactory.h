@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, ZBCollectionViewConfigType) {
     ZBCollectionViewConfigTypeFooterView = 2
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ZBCollectionViewCellConfig : NSObject
 
 @property (nonatomic, copy) ZBCollectionViewCellConfig * (^type)(ZBCollectionViewConfigType);
@@ -38,3 +40,5 @@ typedef NS_ENUM(NSInteger, ZBCollectionViewConfigType) {
 - (NSArray *)install;
 
 @end
+
+NS_ASSUME_NONNULL_END

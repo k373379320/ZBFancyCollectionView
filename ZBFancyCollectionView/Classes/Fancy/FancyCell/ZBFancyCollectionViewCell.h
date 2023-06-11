@@ -22,4 +22,10 @@
 //自定义布局
 @property (nonatomic, copy) void (^ layoutSubviewsBlock)(ZBFancyCollectionViewCell *cell);
 
++ (CGFloat)cellHeight:(id)model;
++ (CGSize)itemSize:(id)data;
++ (UIEdgeInsets)itemMargin:(id)data;
+
+- (void)loadData:(id)data;
+
 @end

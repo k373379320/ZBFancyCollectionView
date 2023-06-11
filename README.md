@@ -1,3 +1,4 @@
+```
 # ZBFancyCollectionView
 
 [![CI Status](https://img.shields.io/travis/373379320@qq.com/ZBFancyCollectionView.svg?style=flat)](https://travis-ci.org/373379320@qq.com/ZBFancyCollectionView)
@@ -7,10 +8,71 @@
 
 ## Example
 
+
+
 #### 一丶基础用法
 
-```oc
 
+### Swift 
+
+```
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor.black;
+        
+        self.collectionView.fancyLayout.hoverIndexPath = IndexPath(item: 0, section: 0)
+        
+        self.view.addSubview(self.collectionView)
+        self.collectionView.snp.makeConstraints { make in
+            make.top.equalTo(self.navigationBar.snp.bottom)
+            make.left.right.bottom.equalTo(0)
+        }
+        // swiftlint:disable:next unused_result
+        self.collectionView.zb_configCollectionView { config in
+            _ = config.headerView("<cyanHeader>").cls("ZBFancyCollectionReusableView")
+            _ = config.footerView("<greenFooter>").cls("ZBFancyCollectionReusableView");
+            _ = config.cell("<title>").cls("ZBFancyCollectionViewCell");
+            _ = config.cell("<red>").cls("ZBFancyCollectionViewCell");
+            _ = config.cell("<yellow>").cls("ZBFancyCollectionViewCell");
+            _ = config.cell("<blue>").cls("ZBFancyCollectionViewCell");
+        }
+        
+        
+        
+        self.collectionView.zb_setup { maker in
+            
+            _ = maker.section("<1Section>")
+            _ = maker.sectionHeader("<cyanHeader>").model([
+                "height" : 44
+            ] as [String : Any])
+            _ = maker.sectionFooter("<greenFooter>")
+            
+            
+            _ = maker.row("<red>")
+                .model(["height": 44, "color": UIColor.red] as [String : Any]).initializeViewBlock{(cell: ZBFancyCollectionViewCell) in
+                    
+                    self._buildColorCell(cell)
+                    
+                }
+            _ = maker.row("<yellow>")
+                .model(["height": 44, "color": UIColor.yellow] as [String : Any]).initializeViewBlock{(cell: ZBFancyCollectionViewCell) in
+                    
+                    self._buildColorCell(cell)
+                    
+                }
+            
+            _ = maker.row("<blue>")
+                .model(["height": 44, "color": UIColor.blue] as [String : Any]).initializeViewBlock{(cell: ZBFancyCollectionViewCell) in
+                    self._buildColorCell(cell)
+                }
+        }
+        
+    }
+
+```
+### Objective-C
+
+```oc
 - (UICollectionView *)collectionView
 {
     if (!_collectionView) {
@@ -43,6 +105,7 @@
     }];
 }
 ```
+
 #### 二丶不需要创建cell.h cell.m 写法
 
 自带FancyCell模板
@@ -68,10 +131,9 @@
 > 使用
 
 ```oc
-
 // 1. register
 [self zb_configTableView:^(ZBCollectionProtoFactory *config) {
-	 config.cell(@"<empty>").cls(@"ZBFancyCollectionViewCell");
+     config.cell(@"<empty>").cls(@"ZBFancyCollectionViewCell");
 }];
         
 // 2. config        
@@ -96,11 +158,9 @@ maker.row(@"<empty>").itemSize(CGSizeMake(kScreenWidth, 98)).initializeViewBlock
 }).model(text);
 ```
 
-
 #### 三丶悬停用法
 
 使用ZBFancyLayout
-
 
 ```
 @interface ZBFancyLayout : UICollectionViewLayout
@@ -142,3 +202,7 @@ pod 'ZBFancyCollectionView'
 ## License
 
 ZBFancyCollectionView is available under the MIT license. See the LICENSE file for more info.
+
+```
+
+```

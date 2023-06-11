@@ -13,6 +13,8 @@
 #import "ZBFancyCollectionData.h"
 #import "ZBFancyLayout.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface UICollectionView (ZBDataSource)
 
 @property (nonatomic, strong, readonly) ZBCollectionViewDataSource *zb_dataSource;
@@ -39,6 +41,9 @@
  */
 + (instancetype)collectionViewWithLayout:(UICollectionViewLayout *)layout;
 
+//可以兼容从tableView切换到CollectionView
+
+- (void)zb_configCollectionView:(void (^)(ZBCollectionProtoFactory *config))block;
 - (void)zb_configTableView:(void (^)(ZBCollectionProtoFactory *config))block;
 
 //会reloadData
@@ -54,3 +59,4 @@
 - (void)zb_appendRowsForSection:(NSString *)tag block:(void (^)(ZBCollectionMaker *maker))block;
 
 @end
+NS_ASSUME_NONNULL_END

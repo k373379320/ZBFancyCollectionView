@@ -71,8 +71,15 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
 
 - (void)zb_configTableView:(void (^)(ZBCollectionProtoFactory *config))block
 {
+    [self zb_configCollectionView:block];
+}
+
+- (void)zb_configCollectionView:(void (^)(ZBCollectionProtoFactory *config))block
+{
     
     ZBCollectionProtoFactory *config = [[ZBCollectionProtoFactory alloc] init];
+    //内置
+    config.headerView(@"<__empty_header__>").cls(@"ZBFancyCollectionReusableView");
     if (block) block(config);
     NSArray *configs = [config install];
     [configs enumerateObjectsUsingBlock:^(NSDictionary *config, NSUInteger idx, BOOL *_Nonnull stop) {
@@ -198,11 +205,13 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
     [sections zbbk_each:^(ZBSection *section) {
         if (section.headerView) {
             ZBFancyLayoutItem *item = [weakSelf fancyLayoutItemWithFancyItem:section.headerView];
-            item.itemType = ZBFancyLayoutItemTypeSectionHeader;
+            
             if (item.size.height > 0) {
+                item.itemType = ZBFancyLayoutItemTypeSectionHeader;
                 [weakSelf.fancyLayout.dataArray addObject:item];
             } else {
                 ZBFancyLayoutItem *item = [[ZBFancyLayoutItem alloc] init];
+                item.itemType = ZBFancyLayoutItemTypeSectionHeader;
                 item.size = CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds), CGFLOAT_MIN);
                 [weakSelf.fancyLayout.dataArray addObject:item];
             }
@@ -234,6 +243,8 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
     ZBFancyLayoutItem *layoutItem = [[ZBFancyLayoutItem alloc] init];
     NSMutableDictionary *protoTypes = [self.zb_dataSource valueForKey:@"protoTypes"];
     Class cls = protoTypes[item.protoType][@"class"];
+    
+    
     if (cls) {
         id model = item.rawModel;
         if ([cls respondsToSelector:item.itemSizeSel]) {
@@ -243,6 +254,10 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
         if ([cls respondsToSelector:sel]) {
             layoutItem.margin = ZBGetEdgeInsetsSendMsg(cls, sel, model);
         }
+    } else {
+        NSString *msg = [NSString stringWithFormat:@"❌ 找不到 Identifier = (%@) 的 class, 检查[collectionView.zb_configCollectionView]是否配置有误",item.protoType];
+        NSLog(@"[ZBFancyCollectionView] %@", msg);
+        NSAssert(cls != nil, msg);
     }
     return layoutItem;
 }

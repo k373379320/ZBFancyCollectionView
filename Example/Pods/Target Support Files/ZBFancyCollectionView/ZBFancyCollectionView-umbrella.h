@@ -15,12 +15,14 @@
 #import "ZBCollectionProtoFactory.h"
 #import "ZBCollectionViewDataSource.h"
 #import "ZBFancyCollectionData.h"
+#import "ZBFancyCollectionViewCell.h"
 #import "ZBFancyItem.h"
 #import "ZBSection.h"
 #import "ZBFancyLayout.h"
 #import "ZBFancyLayoutHelper.h"
 #import "ZBFancyCellProtocol.h"
 #import "UICollectionView+ZBFancy.h"
+#import "ZBFancyCollectionView.h"
 #import "ZBFancyCollectionViewPrefixHeader.h"
 
 FOUNDATION_EXPORT double ZBFancyCollectionViewVersionNumber;
