@@ -247,7 +247,9 @@ static const void *kProperty_fancyLayout = &kProperty_fancyLayout;
     
     if (cls) {
         id model = item.rawModel;
-        if ([cls respondsToSelector:item.itemSizeSel]) {
+        if (item.itemSize.width > 0 || item.itemSize.height > 0) {
+            layoutItem.size = item.itemSize;
+        } else if ([cls respondsToSelector:item.itemSizeSel]) {
             layoutItem.size =  ZBGetSizeSendMsg(cls, item.itemSizeSel, model);
         }
         SEL sel = NSSelectorFromString(@"itemMargin:");
