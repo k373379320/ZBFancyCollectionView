@@ -190,6 +190,23 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     return nil;
 }
 
+- (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    //当前支持section编辑区域,如果要支持cell去判定支持,需要再度开发
+    ZBSection *section = [self.collectionData sectionAtIdx:indexPath.section];
+    if (section.canMove) {
+        return  YES;
+    }
+    return  NO;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
+    
+    ZBSection *section = [self.collectionData sectionAtIdx:sourceIndexPath.section];
+    ZBFancyItem *row = [section rowAtIdx:sourceIndexPath.item];
+    [section moveItemInInnerRowsFromIndexPath:sourceIndexPath toIndexPath:destinationIndexPath];
+}
+
 #pragma mark - UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {

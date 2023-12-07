@@ -18,6 +18,10 @@
 
 @property (nonatomic, strong) ZBFancyItem *footerView;
 
+//是否支持移动
+@property (nonatomic, assign) BOOL canMove;
+
+
 - (NSArray<__kindof ZBFancyItem *> *)rows;
 
 - (ZBFancyItem *)rowAtIdx:(NSInteger)idx;
@@ -32,5 +36,6 @@
 
 - (void)replaceSectionWithRows:(NSArray<__kindof ZBFancyItem *> *)rows;
 
+- (void)moveItemInInnerRowsFromIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath;
 
 @end

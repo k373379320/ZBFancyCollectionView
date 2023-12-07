@@ -156,6 +156,19 @@
     };
 }
 
+
+- (ZBCollectionViewSectionMaker * (^)(BOOL canMove))canMove
+{
+    __weak typeof(self) weakSelf = self;
+    return ^id(BOOL canMove) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        ZBCollectionViewSectionMaker *sectionMaker = strongSelf.currentSectionMaker;
+        sectionMaker.section.canMove = canMove;
+        return strongSelf.currentSectionMaker.section;
+    };
+}
+
+
 - (ZBCollectionRowMaker * (^)(NSString *) )sectionHeader
 {
     __weak typeof(self) weakSelf = self;

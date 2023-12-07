@@ -1,7 +1,7 @@
 #
 Pod::Spec.new do |s|
   s.name = 'ZBFancyCollectionView'
-  s.version = '1.2.0'
+  s.version = '1.2.1'
   s.summary = 'A delightful iOS ZBFancyCollectionView framework.'
   s.homepage = 'https://github.com/k373379320/ZBFancyCollectionView'
   s.license = { :type => 'MIT', :file => 'LICENSE' }

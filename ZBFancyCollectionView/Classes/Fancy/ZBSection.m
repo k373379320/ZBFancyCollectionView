@@ -27,6 +27,8 @@
     return nil;
 }
 
+
+
 - (void)appendRows:(NSArray<__kindof ZBFancyItem *> *)rows
 {
     [self.innerRows addObjectsFromArray:rows];
@@ -65,6 +67,19 @@
 - (void)replaceSectionWithRows:(NSArray<__kindof ZBFancyItem *> *)rows
 {
     self.innerRows = [[NSMutableArray alloc] initWithArray:rows];
+}
+
+
+- (void)moveItemInInnerRowsFromIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    // 安全检查
+    if (fromIndexPath.item < self.innerRows.count && toIndexPath.item < self.innerRows.count) {
+        // 获取要移动的对象
+        ZBFancyItem *itemToMove = self.innerRows[fromIndexPath.item];
+        
+        // 在数组中移动对象
+        [self.innerRows removeObjectAtIndex:fromIndexPath.item];
+        [self.innerRows insertObject:itemToMove atIndex:toIndexPath.item];
+    }
 }
 
 ZBLazyProperty(NSMutableArray, innerRows);

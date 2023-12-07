@@ -56,6 +56,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) ZBCollectionRowMaker * (^row)(NSString *proto);
 
+
+/*是否允许移动
+
+ Cell上还需要添加长按手势,才能拖动编辑
+ 
+ Example:
+ UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+ [cell addGestureRecognizer:longPress];
+ 
+ - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
+ {
+     CGPoint location = [gesture locationInView:self.collectionView];
+     NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:location];
+     switch(gesture.state) {
+         case UIGestureRecognizerStateBegan:
+             [self.collectionView beginInteractiveMovementForItemAtIndexPath:indexPath];
+             break;
+         case UIGestureRecognizerStateChanged:
+             [self.collectionView updateInteractiveMovementTargetPosition:location];
+             break;
+         case UIGestureRecognizerStateEnded:
+             [self.collectionView endInteractiveMovement];
+             break;
+         default:
+             [self.collectionView cancelInteractiveMovement];
+             break;
+     }
+ }
+*/
+@property (nonatomic, copy) ZBCollectionViewSectionMaker * (^canMove)(BOOL canMove);
+
 - (NSArray *)install;
 
 @end
