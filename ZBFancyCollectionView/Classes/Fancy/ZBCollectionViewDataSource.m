@@ -207,6 +207,33 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     [section moveItemInInnerRowsFromIndexPath:sourceIndexPath toIndexPath:destinationIndexPath];
 }
 
+/* 以下是实现右边标题功能,以及点击触发具体事件
+ //显示右边标题
+ - (nullable NSArray<NSString *> *)indexTitlesForCollectionView:(UICollectionView *)collectionView
+ {
+ return @[@"1",@"2",@"3",@"4",];
+ }
+ 
+ //右边标题点击响应
+ - (NSIndexPath *)collectionView:(UICollectionView *)collectionView indexPathForIndexTitle:(NSString *)title atIndex:(NSInteger)index
+ {
+ return  [NSIndexPath indexPathForItem:0 inSection:0];
+ }
+ */
+
+// indexPaths are ordered ascending by geometric distance from the collection view
+- (void)collectionView:(UICollectionView *)collectionView prefetchItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
+    
+    NSLog(@"prefetchItemsAtIndexPaths");
+}
+
+- (void)collectionView:(UICollectionView *)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
+    NSLog(@"cancelPrefetchingForItemsAtIndexPaths");
+}
+
+
 #pragma mark - UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -244,7 +271,10 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     ZBFancyItem *row = sec.headerView;
     if (row) {
         if (row.itemSize.height > 0 || row.itemSize.width > 0) {
-            return row.itemSize;
+            if ([self needFixEmptyHeaderLayoutWithCollectionViewLayout:collectionViewLayout row:row]) {
+                return CGSizeMake(CGFLOAT_MIN, CGFLOAT_MIN);
+            }
+            return row.itemSize;;
         }
         if (row.itemSizeSel) {
             Class cls = (_protoTypes[row.protoType] ? _protoTypes[row.protoType][ZBCollectionViewFancyProtoTypeClassKey] : nil);
@@ -258,6 +288,17 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     }
     return CGSizeZero;
 }
+
+//这是特殊的占位header,需要特殊处理
+- (BOOL)needFixEmptyHeaderLayoutWithCollectionViewLayout:(UICollectionViewLayout *)collectionViewLayout row:(ZBFancyItem *)row
+{
+    if ([row.protoType isEqualToString:@"<__empty_header__>"]) {
+        return YES;
+    }
+    return  NO;
+    
+}
+
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     ZBSection *sec = [self.collectionData sectionAtIdx:section];
@@ -289,5 +330,29 @@ static NSString *const ZBCollectionViewFancyProtoTypeNibKey = @"nib";
     return 0;
 }
 
-
+/* 一些可有可无的操作
+ 
+ // 能否选中
+ - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+ return YES;
+ }
+ 
+ // 选中后能否弹出菜单
+ - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+ return YES;
+ }
+ 
+ // 能否执行菜单里的某个操作
+ - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+ return YES;
+ }
+ 
+ // 棘突执行菜单选项的操作
+ - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+ if ([NSStringFromSelector(action) isEqualToString:@"copy:"]) {
+ 
+ 
+ }
+ }
+ */
 @end
